@@ -1,11 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "ES6",
-    "module": "ES6",
-    "strict": true,
-    "esModuleInterop": true,
-    "outDir": "./dist",
-    "sourceMap": true
-  },
-  "include": ["src/**/*"]
+  // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json"
 }
