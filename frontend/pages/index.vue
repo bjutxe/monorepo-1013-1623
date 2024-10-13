@@ -1,52 +1,50 @@
 <template>
   <div class="container">
-    <h1>アイテム登録フォーム</h1>
-    <form @submit.prevent="addItem">
+    <h1>名前入力フォーム</h1>
+    <form @submit.prevent="sendName">
       <div>
-        <label for="name">書名:</label>
+        <label for="name">名前:</label>
         <input type="text" id="name" v-model="name" required />
       </div>
-      <div>
-        <label for="price">価格 (円):</label>
-        <input type="number" id="price" v-model.number="price" required />
-      </div>
-      <button type="submit">登録</button>
+      <button type="submit">送信</button>
     </form>
 
-    <h2>登録されたアイテム:</h2>
-    <ul>
-      <li v-for="(item, index) in items" :key="index">
-        {{ item.say() }}
-      </li>
-    </ul>
+    <h2>バックエンドからのレスポンス:</h2>
+    <div v-if="responseMessage">{{ responseMessage }}</div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { Item } from '~/item';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'HomePage',
   setup() {
     const name = ref('');
-    const price = ref<number | null>(null);
-    const items = ref<Item[]>([]);
+    const responseMessage = ref('');
 
-    const addItem = () => {
-      if (name.value && price.value !== null) {
-        const newItem = new Item(name.value, price.value);
-        items.value.push(newItem);
+    const sendName = async () => {
+      if (name.value.trim() === '') {
+        responseMessage.value = '名前を入力してください。';
+        return;
+      }
+
+      try {
+        const payload = { name: name.value };
+        const response = await axios.post('http://localhost:8080/api/hello', payload);
+        responseMessage.value = response.data.message;
         name.value = '';
-        price.value = null;
+      } catch (error) {
+        console.error(error);
+        responseMessage.value = 'エラーが発生しました。';
       }
     };
 
     return {
       name,
-      price,
-      items,
-      addItem,
+      responseMessage,
+      sendName,
     };
   },
 });
@@ -65,11 +63,15 @@ form div {
 
 label {
   display: inline-block;
-  width: 100px;
+  width: 60px;
 }
 
 input {
   padding: 5px;
-  width: calc(100% - 110px);
+  width: calc(100% - 70px);
+}
+
+button {
+  padding: 10px 20px;
 }
 </style>

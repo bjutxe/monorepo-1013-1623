@@ -4,9 +4,8 @@ services:
       context: ./backend
     ports:
       - "8080:8080"
-    volumes:
-      - ./backend:/usr/src/app
-    command: cargo run --release
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -18,3 +17,9 @@ services:
     command: npm run dev
     environment:
       - CHOKIDAR_USEPOLLING=true
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
